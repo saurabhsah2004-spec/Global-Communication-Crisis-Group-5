@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Global Communication Crisis – MBA Simulation</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#f4f7fa;
+    margin:0;
+    text-align:center;
+    color:#1f2933;
+}
+
+h1{
+    margin-top:30px;
+    font-size:42px;
+    color:#1e3a8a;
+}
+
+/* Instruction Panel */
+#instructions{
+    background:white;
+    width:85%;
+    margin:30px auto;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    text-align:left;
+    font-size:18px;
+    line-height:1.6;
+}
+
+/* Dashboard */
+#dashboard{
+    display:flex;
+    justify-content:center;
+    gap:100px;
+    margin:30px 0;
+}
+
+.playerBox{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    width:260px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    font-size:20px;
+}
+
+.score{
+    font-size:28px;
+    font-weight:700;
+    color:#1e3a8a;
+}
+
+/* Scenario Panel */
+#scenarioBox{
+    background:white;
+    width:80%;
+    margin:40px auto;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    font-size:22px;
+    display:none;
+}
+
+button{
+    padding:14px 24px;
+    margin:12px;
+    font-size:18px;
+    border:none;
+    border-radius:8px;
+    background:#1e3a8a;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+#roundInfo{
+    font-size:22px;
+    margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🌍 Global Communication Crisis</h1>
+
+<div id="instructions">
+<h3>📜 Simulation Rules</h3>
+
+<b>Objective:</b><br>
+You are Global Managers handling international communication crises.<br>
+Your goal is to maintain trust and demonstrate cultural communication intelligence.<br><br>
+
+<b>How It Works:</b><br>
+• The game lasts 8 communication rounds.<br>
+• Each round presents a real-world cross-cultural communication scenario.<br>
+• A country and cultural dimension will be involved.<br>
+• You must choose the best communication response.<br><br>
+
+<b>Scoring:</b><br>
+✔ Correct Cultural Communication = +5 Trust & +3 Intelligence<br>
+➖ Partially Correct = +2 Trust & +1 Intelligence<br>
+❌ Wrong Communication = -4 Trust<br><br>
+
+<b>Winning Condition:</b><br>
+After 8 rounds, the player with the highest Trust Score wins.<br><br>
+
+This simulation tests tone, framing, hierarchy sensitivity, negotiation style, and cultural awareness.
+</div>
+
+<div id="dashboard">
+<div class="playerBox">
+Player A<br>
+Trust: <span id="trustA" class="score">0</span><br>
+Intelligence: <span id="intelA">0</span>
+</div>
+
+<div class="playerBox">
+Player B<br>
+Trust: <span id="trustB" class="score">0</span><br>
+Intelligence: <span id="intelB">0</span>
+</div>
+</div>
+
+<div id="roundInfo">
+Current Player: <span id="currentPlayer">A</span> | Round <span id="roundNumber">1</span>/8
+</div>
+
+<button onclick="startRound()">Start Communication Round</button>
+
+<div id="scenarioBox">
+<h3 id="scenarioTitle"></h3>
+<p id="scenarioText"></p>
+<div id="options"></div>
+</div>
+
+<script>
+
+let currentPlayer=0;
+let round=1;
+
+let trust=[0,0];
+let intelligence=[0,0];
+
+const scenarios=[
+{
+title:"🇯🇵 Japan – Collectivism & High Context",
+text:"Email from Japanese partner: 'We feel the timeline may require further reflection.'",
+options:[
+{text:"Reply: Deadline is fixed. Confirm today.", trust:-4, intel:0},
+{text:"Reply politely asking for clarification and flexibility.", trust:5, intel:3},
+{text:"Ignore and wait.", trust:2, intel:1}
+]
+},
+{
+title:"🇺🇸 USA – Individualism",
+text:"Your American employee wants personal recognition for performance.",
+options:[
+{text:"Publicly recognize individual achievement.", trust:5, intel:3},
+{text:"Praise entire team only.", trust:-4, intel:0},
+{text:"Avoid recognition.", trust:2, intel:1}
+]
+},
+{
+title:"🇩🇪 Germany – High Uncertainty Avoidance",
+text:"You introduce a new process without detailed guidelines.",
+options:[
+{text:"Provide detailed SOP and structured rollout.", trust:5, intel:3},
+{text:"Tell them to experiment freely.", trust:-4, intel:0},
+{text:"Give minimal explanation.", trust:2, intel:1}
+]
+},
+{
+title:"🇨🇳 China – Long-Term Orientation",
+text:"Negotiation is slow and relationship-focused.",
+options:[
+{text:"Build relationship before pushing deal.", trust:5, intel:3},
+{text:"Pressure for immediate closure.", trust:-4, intel:0},
+{text:"Threaten withdrawal.", trust:-4, intel:0}
+]
+},
+{
+title:"🇸🇪 Sweden – Feminine Culture",
+text:"Conflict arises between team members.",
+options:[
+{text:"Encourage compromise and consensus.", trust:5, intel:3},
+{text:"Push competitive resolution.", trust:-4, intel:0},
+{text:"Ignore the conflict.", trust:2, intel:1}
+]
+}
+];
+
+function startRound(){
+if(round>8){
+endGame();
+return;
+}
+
+let randomScenario=scenarios[Math.floor(Math.random()*scenarios.length)];
+
+document.getElementById("scenarioBox").style.display="block";
+document.getElementById("scenarioTitle").innerText=randomScenario.title;
+document.getElementById("scenarioText").innerText=randomScenario.text;
+
+let optionsDiv=document.getElementById("options");
+optionsDiv.innerHTML="";
+
+randomScenario.options.forEach(option=>{
+let btn=document.createElement("button");
+btn.innerText=option.text;
+btn.onclick=function(){
+trust[currentPlayer]+=option.trust;
+intelligence[currentPlayer]+=option.intel;
+
+updateScores();
+
+currentPlayer=currentPlayer==0?1:0;
+round++;
+
+document.getElementById("currentPlayer").innerText=currentPlayer==0?"A":"B";
+document.getElementById("roundNumber").innerText=round;
+
+document.getElementById("scenarioBox").style.display="none";
+}
+optionsDiv.appendChild(btn);
+});
+}
+
+function updateScores(){
+document.getElementById("trustA").innerText=trust[0];
+document.getElementById("trustB").innerText=trust[1];
+document.getElementById("intelA").innerText=intelligence[0];
+document.getElementById("intelB").innerText=intelligence[1];
+}
+
+function endGame(){
+let winner=trust[0]>trust[1]?"Player A Wins!":"Player B Wins!";
+alert("Simulation Complete!\n"+winner);
+location.reload();
+}
+
+</script>
+
+</body>
+</html>
